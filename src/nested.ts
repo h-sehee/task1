@@ -6,9 +6,14 @@ import { Question, QuestionType } from "./interfaces/question";
  * that are `published`.
  */
 export function getPublishedQuestions(questions: Question[]): Question[] {
-    const newQuestions = questions.filter(
-        (question: Question): boolean => question.published
-    );
+    const newQuestions = questions
+        .map(
+            (question: Question): Question => ({
+                ...question,
+                options: [...question.options]
+            })
+        )
+        .filter((question: Question): boolean => question.published);
     return newQuestions;
 }
 
@@ -23,7 +28,7 @@ export function getNonEmptyQuestions(questions: Question[]): Question[] {
             !(
                 question.body === "" &&
                 question.expected === "" &&
-                question.options.toString() === ""
+                question.options.length === 0
             )
     );
     return newQuestions;
@@ -37,10 +42,10 @@ export function findQuestion(
     questions: Question[],
     id: number
 ): Question | null {
-    const matchedQuestion = questions.filter(
+    const matchedQuestion = questions.find(
         (question: Question): boolean => question.id === id
     );
-    return matchedQuestion.length !== 0 ? matchedQuestion[0] : null;
+    return matchedQuestion !== undefined ? matchedQuestion : null;
 }
 
 /**
@@ -69,7 +74,12 @@ export function getNames(questions: Question[]): string[] {
  * Consumes an array of questions and returns the sum total of all their points added together.
  */
 export function sumPoints(questions: Question[]): number {
-    return 0;
+    const sum = questions.reduce(
+        (currentTotal: number, question: Question) =>
+            currentTotal + question.points,
+        0
+    );
+    return sum;
 }
 
 /***
