@@ -235,7 +235,21 @@ export function changeQuestionTypeById(
     targetId: number,
     newQuestionType: QuestionType
 ): Question[] {
-    return [];
+    const newQuestions = questions.map((question: Question): Question => {
+        if (question.id === targetId) {
+            if (newQuestionType !== "multiple_choice_question") {
+                return { ...question, options: [], type: newQuestionType };
+            } else {
+                return {
+                    ...question,
+                    options: [...question.options],
+                    type: newQuestionType
+                };
+            }
+        }
+        return { ...question, options: [...question.options] };
+    });
+    return newQuestions;
 }
 
 /**
@@ -254,7 +268,20 @@ export function editOption(
     targetOptionIndex: number,
     newOption: string
 ): Question[] {
-    return [];
+    return questions.map((question: Question): Question => {
+        if (question.id === targetId) {
+            let newOptions: string[];
+            if (targetOptionIndex === -1) {
+                newOptions = [...question.options, newOption];
+            } else {
+                newOptions = [...question.options];
+                newOptions.splice(targetOptionIndex, 1, newOption);
+            }
+            return { ...question, options: newOptions };
+        } else {
+            return { ...question, options: [...question.options] };
+        }
+    });
 }
 
 /***
@@ -268,5 +295,19 @@ export function duplicateQuestionInArray(
     targetId: number,
     newId: number
 ): Question[] {
-    return [];
+    const questionIndex = questions.findIndex(
+        (question: Question): boolean => question.id === targetId
+    );
+    const newQuestions = questions.map(
+        (question: Question): Question => ({
+            ...question,
+            options: [...question.options]
+        })
+    );
+    newQuestions.splice(
+        questionIndex + 1,
+        0,
+        duplicateQuestion(newId, newQuestions[questionIndex])
+    );
+    return newQuestions;
 }
