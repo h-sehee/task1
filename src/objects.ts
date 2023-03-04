@@ -46,7 +46,7 @@ export function isValid(question: Question, answer: string): boolean {
     let isAnswerValid = false;
     if (question.type === "short_answer_question") {
         isAnswerValid = true;
-    } else if (question.type === "multiple_choice_question") {
+    } else {
         isAnswerValid = question.options.includes(answer);
     }
     return isAnswerValid;
